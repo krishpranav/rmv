@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 class Arguments
 {
     public private( set ) var directories = false
@@ -74,5 +73,27 @@ class Arguments
                 self.files.append( arg )
             }
         }
+    }
+    
+    public func usage() -> String?
+    {
+        let task   = Process()
+        let stdout = Pipe()
+        
+        task.launchPath     = "/bin/rm"
+        task.arguments      = []
+        task.standardOutput = stdout
+        
+        task.launch()
+        task.waitUntilExit()
+        
+        let data = stdout.fileHandleForReading.readDataToEndOfFile()
+        
+        return String( data: data, encoding: .utf8 )?.trimmingCharacters( in: CharacterSet.whitespacesAndNewlines )
+    }
+    
+    public enum Error: Swift.Error
+    {
+        case RuntimeError( String )
     }
 }
